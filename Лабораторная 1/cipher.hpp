@@ -26,6 +26,10 @@ public:
      */
     std::string decrypt(const std::string& ciphertext) const;
 
+    //Методы для работы с файлами
+    bool encryptFile(const std::string& inputFile, const std::string& outputFile) const;
+    bool decryptFile(const std::string& inputFile, const std::string& outputFile) const;
+
     /**
      * Получить текущий ключ
      */

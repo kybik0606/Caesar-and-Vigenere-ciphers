@@ -1,6 +1,9 @@
 #include "cipher.hpp"
+#include <iostream>
 #include <cctype>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 
 // Константы для размеров алфавитов
 constexpr int ENG = 26;
@@ -75,3 +78,81 @@ char::CaesarCipher::shiftChar(char c, int shift) const
 
 	return result;
 }
+
+bool CaesarCipher::encryptFile(const std::string& inputFile, const std::string& outputFile) const
+{
+	try {
+		// Открываем файл для чтения
+		std::ifstream inFile(inputFile);
+		if (!inFile.is_open()) {
+			std::cout << "Ошибка: не удалось открыть файл " << inputFile << std::endl;
+			return false;
+		}
+
+		// Читаем все содержимое файла
+		std::stringstream buffer;
+		buffer << inFile.rdbuf();
+		std::string content = buffer.str();
+		inFile.close();
+
+		// Шифруем содержимое
+		std::string encrypted = encrypt(content);
+
+		// Записываем в выходной файл
+		std::ofstream outFile(outputFile);
+		if (!outFile.is_open()) {
+			std::cout << "Ошибка: не удалось создать файл " << outputFile << std::endl;
+			return false;
+		}
+
+		outFile << encrypted;
+		outFile.close();
+
+		std::cout << "Файл успешно зашифрован: " << outputFile << std::endl;
+		return true;
+	}
+	catch (const std::exception& e) {
+		std::cout << "Ошибка при шифровании файла: " << e.what() << std::endl;
+		return false;
+	}
+}
+
+bool CaesarCipher::decryptFile(const std::string& inputFile, const std::string& outputFile) const
+{
+	try {
+		// Открываем файл для чтения
+		std::ifstream inFile(inputFile);
+		if (!inFile.is_open()) {
+			std::cout << "Ошибка: не удалось открыть файл " << inputFile << std::endl;
+			return false;
+		}
+
+		// Читаем все содержимое файла
+		std::stringstream buffer;
+		buffer << inFile.rdbuf();
+		std::string content = buffer.str();
+		inFile.close();
+
+		// Дешифруем содержимое
+		std::string decrypted = decrypt(content);
+
+		// Записываем в выходной файл
+		std::ofstream outFile(outputFile);
+		if (!outFile.is_open()) {
+			std::cout << "Ошибка: не удалось создать файл " << outputFile << std::endl;
+			return false;
+		}
+
+		outFile << decrypted;
+		outFile.close();
+
+		std::cout << "Файл успешно расшифрован: " << outputFile << std::endl;
+		return true;
+	}
+	catch (const std::exception& e) {
+		std::cout << "Ошибка при дешифровании файла: " << e.what() << std::endl;
+		return false;
+	}
+}
+
+// Реализация методов VigenereCipher

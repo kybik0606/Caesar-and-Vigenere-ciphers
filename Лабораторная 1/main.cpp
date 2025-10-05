@@ -18,6 +18,7 @@ void showMenu()
 void caesarMenu()
 {
     CaesarCipher cipher(3); // ключ по умолчанию
+    string input;
     int choice;
 
     do 
@@ -27,19 +28,35 @@ void caesarMenu()
         cout << "2. Получить сдвиг" << endl;
         cout << "3. Зашифровать текст" << endl;
         cout << "4. Расшифровать текст" << endl;
-        cout << "5. Назад" << endl;
+        cout << "5. Зашифровать файл" << endl;
+        cout << "6. Расшифровать файл" << endl;
+        cout << "7. Назад" << endl;
         cout << "Выберите опцию: ";
         
-        cin >> choice;
+        getline(cin, input);
+
+        if (input.length() == 1) {
+            choice = input[0] - '0';
+        }
+        else {
+            choice = 0;
+        }
 
         switch (choice) 
         {
             case 1: 
             {
-                int key;
                 cout << "Введите сдвиг: ";
-                cin >> key;
-                cipher.setKey(key);
+                getline(cin, input);
+                try
+                {
+                    int key = stoi(input);
+                    cipher.setKey(key);
+                }
+                catch (...)
+                {
+                    cout << "Ошибка! Введите число." << endl;
+                }
                 break;
             }
             case 2:
@@ -49,20 +66,17 @@ void caesarMenu()
             {
                 string text;
                 cout << "Введите текст для шифрования: ";
-                cin.ignore();
                 getline(cin, text);
                 string encrypted = cipher.encrypt(text);
                 cout << endl << "Зашифрованный текст: " << encrypted << endl;
                 string decrypted = cipher.decrypt(encrypted);
                 cout << "Расшифрованный текст: " << decrypted << endl;
-
                 break;
             }
             case 4: 
             {
                 string text;
                 cout << "Введите текст для дешифрования: ";
-                cin.ignore();
                 getline(cin, text);
                 string decrypted = cipher.decrypt(text);
                 cout << endl << "Расшифрованный текст: " << decrypted << endl;
@@ -70,12 +84,51 @@ void caesarMenu()
                 cout << "Зашифрованный текст: " << encrypted << endl;
                 break;
             }
-            
+            case 5:
+            {
+                string inputFile, outputFile;
+                cout << "Введите путь к исходному файлу: ";
+                getline(cin, inputFile);
+                cout << "Введите путь для зашифрованного файла: ";
+                getline(cin, outputFile);
+
+                // Добавляем расширение .txt если не указано
+                if (outputFile.find('.') == string::npos) {
+                    outputFile += ".txt";
+                }
+
+                cipher.encryptFile(inputFile, outputFile);
+                break;
+            }
+            case 6:
+            {
+                string inputFile, outputFile;
+                cout << "Введите путь к зашифрованному файлу: ";
+                getline(cin, inputFile);
+                cout << "Введите путь для расшифрованного файла: ";
+                getline(cin, outputFile);
+
+                // Добавляем расширение .txt если не указано
+                if (outputFile.find('.') == string::npos) {
+                    outputFile += ".txt";
+                }
+
+                cipher.decryptFile(inputFile, outputFile);
+                break;
+            }
+            case 7:
+            {
+                cout << endl << "Выход из шифра Цезаря..." << endl;
+                break;
+            }
+            default:
+                cout << endl << "Неверный выбор!" << endl;
         }
-    } while (choice != 5);
+    } while (choice != 7);
 }
 
-int main() {
+int main() 
+{
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     setlocale(LC_ALL, "Russian");
@@ -83,18 +136,24 @@ int main() {
     string input;
     int choice;
 
-    do {
+    do 
+    {
         showMenu();
         getline(cin, input);
 
-        try {
-            choice = stoi(input); // пробуем преобразовать в число
+        if (input.length() == 1) 
+        {
+            char c = input[0];
+            if (c == '1') choice = 1;
+            else if (c == '2') choice = 2;
+            else if (c == '3') choice = 3;
+            else choice = 0;
         }
-        catch (...) {
-            choice = 0; // если не число - ставим невалидное значение
-        }
-       
-        switch (choice) {
+        else 
+            choice = 0;
+
+        switch (choice) 
+        {
         case 1:
             caesarMenu();
             break;
@@ -107,6 +166,5 @@ int main() {
             cout << endl << "Неверный выбор!" << endl;
         }
     } while (choice != 3);
-
     return 0;
 }
