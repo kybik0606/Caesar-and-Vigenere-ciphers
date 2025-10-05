@@ -17,7 +17,7 @@ void showMenu()
 
 void caesarMenu()
 {
-    CaesarCipher cipher(3); // ключ по умолчанию
+    CaesarCipher cipher(2); // ключ по умолчанию
     string input;
     int choice;
 
