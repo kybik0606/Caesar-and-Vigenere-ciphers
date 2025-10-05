@@ -71,6 +71,10 @@ public:
      */
     std::string decrypt(const std::string& ciphertext) const;
 
+    //Методы для работы с файлами
+    bool encryptFile(const std::string& inputFile, const std::string& outputFile) const;
+    bool decryptFile(const std::string& inputFile, const std::string& outputFile) const;
+
     /**
      * Получить текущий ключ
      */
@@ -84,6 +88,7 @@ public:
 private:
     std::string key_;
     char shiftChar(char c, int shift) const;
+    std::string extendKey(const std::string& key, size_t length) const;
 };
 
 #endif // CIPHERS_HPP
