@@ -1,6 +1,5 @@
 #include "cipher.hpp"
 #include <iostream>
-#include <cctype>
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
@@ -52,7 +51,7 @@ void CaesarCipher::setKey(int key)
 char::CaesarCipher::shiftChar(char c, int shift) const
 {
 	unsigned char uc = static_cast<unsigned char>(c);
-
+   
 	if (uc >= 'A' && uc <= 'Z') return 'A' + (uc - 'A' + shift + ENG) % ENG;
 	if (uc >= 'a' && uc <= 'z') return 'a' + (uc - 'a' + shift + ENG) % ENG;
 
@@ -66,7 +65,7 @@ bool CaesarCipher::encryptFile(const std::string& inputFile, const std::string& 
 {
 	try {
 		// Открываем файл для чтения
-		std::ifstream inFile(inputFile);
+		std::ifstream inFile(inputFile, std::ios::binary);
 		if (!inFile.is_open()) {
 			std::cout << "Ошибка: не удалось открыть файл " << inputFile << std::endl;
 			return false;
@@ -82,7 +81,7 @@ bool CaesarCipher::encryptFile(const std::string& inputFile, const std::string& 
 		std::string encrypted = encrypt(content);
 
 		// Записываем в выходной файл
-		std::ofstream outFile(outputFile);
+		std::ofstream outFile(outputFile, std::ios::binary);
 		if (!outFile.is_open()) {
 			std::cout << "Ошибка: не удалось создать файл " << outputFile << std::endl;
 			return false;
@@ -104,7 +103,7 @@ bool CaesarCipher::decryptFile(const std::string& inputFile, const std::string& 
 {
 	try {
 		// Открываем файл для чтения
-		std::ifstream inFile(inputFile);
+		std::ifstream inFile(inputFile, std::ios::binary);
 		if (!inFile.is_open()) {
 			std::cout << "Ошибка: не удалось открыть файл " << inputFile << std::endl;
 			return false;
@@ -120,7 +119,7 @@ bool CaesarCipher::decryptFile(const std::string& inputFile, const std::string& 
 		std::string decrypted = decrypt(content);
 
 		// Записываем в выходной файл
-		std::ofstream outFile(outputFile);
+		std::ofstream outFile(outputFile, std::ios::binary);
 		if (!outFile.is_open()) {
 			std::cout << "Ошибка: не удалось создать файл " << outputFile << std::endl;
 			return false;
@@ -279,7 +278,7 @@ std::string VigenereCipher::extendKey(const std::string& key, size_t length) con
 	if (key.empty()) return "A";
 
 	std::string extended;
-	extended.reserve(length); // Резервируем память для эффективности
+	extended.reserve(length); 
 
 	for (size_t i = 0; i < length; i++) {
 		extended += key[i % key.length()];

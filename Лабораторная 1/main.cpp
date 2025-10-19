@@ -252,16 +252,12 @@ int main()
         showMenu();
         getline(cin, input);
 
-        if (input.length() == 1) 
-        {
-            char c = input[0];
-            if (c == '1') choice = 1;
-            else if (c == '2') choice = 2;
-            else if (c == '3') choice = 3;
-            else choice = 0;
+        if (input.length() == 1) {
+            choice = input[0] - '0';
         }
-        else 
+        else {
             choice = 0;
+        }
 
         switch (choice) 
         {
