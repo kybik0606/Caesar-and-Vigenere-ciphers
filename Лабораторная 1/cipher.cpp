@@ -9,6 +9,12 @@
 constexpr int ENG = 26;
 constexpr int RUS = 32;
 
+// CP1251 коды для кириллицы
+constexpr unsigned char CYR_A = 0xC0;   // А
+constexpr unsigned char CYR_YA = 0xDF;  // Я
+constexpr unsigned char CYR_a = 0xE0;   // а
+constexpr unsigned char CYR_ya = 0xFF;  // я
+
 // Реализация методов CaesarCipher
 
 CaesarCipher::CaesarCipher(int key) : key_(key) {}
@@ -170,8 +176,8 @@ std::string VigenereCipher::encrypt(const std::string& plaintext) const
 
 		if (k >= 'A' && k <= 'Z') shift = k - 'A';
 		else if (k >= 'a' && k <= 'z') shift = k - 'a';
-		else if (k >= 'А' && k <= 'Я') shift = k - 'А';
-		else if (k >= 'а' && k <= 'я') shift = k - 'а';
+		else if (k >= CYR_A && k <= CYR_YA) shift = k - CYR_A;
+		else if (k >= CYR_a && k <= CYR_ya) shift = k - CYR_a;
 
 		result += shiftChar(plaintext[i], shift);
 	}
@@ -189,8 +195,8 @@ std::string VigenereCipher::decrypt(const std::string& ciphertext) const
 
 		if (k >= 'A' && k <= 'Z') shift = k - 'A';
 		else if (k >= 'a' && k <= 'z') shift = k - 'a';
-		else if (k >= 'А' && k <= 'Я') shift = k - 'А';
-		else if (k >= 'а' && k <= 'я') shift = k - 'а';
+		else if (k >= CYR_A && k <= CYR_YA) shift = k - CYR_A;
+		else if (k >= CYR_a && k <= CYR_ya) shift = k - CYR_a;
 
 		result += shiftChar(ciphertext[i], -shift);
 	}
