@@ -9,6 +9,12 @@
 constexpr int ENG = 26;
 constexpr int RUS = 32;
 
+// CP1251 коды для кириллицы
+constexpr unsigned char CYR_A = 0xC0;   // А
+constexpr unsigned char CYR_YA = 0xDF;  // Я
+constexpr unsigned char CYR_a = 0xE0;   // а
+constexpr unsigned char CYR_ya = 0xFF;  // я
+
 // Реализация методов CaesarCipher
 
 CaesarCipher::CaesarCipher(int key) : key_(key) {}
@@ -162,73 +168,39 @@ VigenereCipher::VigenereCipher(const std::string& key) : key_(key) {}
 std::string VigenereCipher::encrypt(const std::string& plaintext) const
 {
 	std::string result;
+	std::string longKey = extendKey(key_, plaintext.size());
 
-	// Удлиняем ключ до длины текста
-	std::string longKey = extendKey(key_, plaintext.length());
-	size_t key_index = 0;
-
-	for (char c : plaintext) {
-		// Получаем текущий символ удлиненного ключа
-		char key_char = longKey[key_index];
-
-		// Вычисляем сдвиг на основе ключевого символа
+	for (size_t i = 0; i < plaintext.size(); ++i) {
+		unsigned char k = static_cast<unsigned char>(longKey[i]);
 		int shift = 0;
-		if (key_char >= 'A' && key_char <= 'Z')
-		{
-			shift = key_char - 'A';
-		}
-		else if (key_char >= 'a' && key_char <= 'z')
-		{
-			shift = key_char - 'a';
-		}
-		else if (key_char >= 'А' && key_char <= 'Я')
-		{
-			shift = key_char - 'А';
-		}
-		else if (key_char >= 'а' && key_char <= 'я')
-		{
-			shift = key_char - 'а';
-		}
 
-		// Применяем сдвиг
-		result += shiftChar(c, shift);
-		key_index++;
+		if (k >= 'A' && k <= 'Z') shift = k - 'A';
+		else if (k >= 'a' && k <= 'z') shift = k - 'a';
+		else if (k >= CYR_A && k <= CYR_YA) shift = k - CYR_A;
+		else if (k >= CYR_a && k <= CYR_ya) shift = k - CYR_a;
+
+		result += shiftChar(plaintext[i], shift);
 	}
 	return result;
 }
 
 std::string VigenereCipher::decrypt(const std::string& ciphertext) const
 {
-    std::string result;
-    size_t key_index = 0;
+	std::string result;
+	std::string longKey = extendKey(key_, ciphertext.size());
 
-    for (char c : ciphertext) {
-        // Получаем текущий символ ключа
-        char key_char = key_[key_index % key_.length()];
+	for (size_t i = 0; i < ciphertext.size(); ++i) {
+		unsigned char k = static_cast<unsigned char>(longKey[i]);
+		int shift = 0;
 
-        // Вычисляем обратный сдвиг для дешифрования
-        int shift = 0;
-        if (key_char >= 'A' && key_char <= 'Z') {
-            shift = 26 - (key_char - 'A');
-        }
-        else if (key_char >= 'a' && key_char <= 'z') {
-            shift = 26 - (key_char - 'a');
-        }
-		else if (key_char >= 'А' && key_char <= 'Я') {
-            // Для заглавных кириллических букв в Windows-1251
-            shift = 32 - (key_char - 'А');
-        }
-		else if (key_char >= 'а' && key_char <= 'я') {
-			// Для заглавных кириллических букв в Windows-1251
-			shift = 32 - (key_char - 'а');
-        }
+		if (k >= 'A' && k <= 'Z') shift = k - 'A';
+		else if (k >= 'a' && k <= 'z') shift = k - 'a';
+		else if (k >= CYR_A && k <= CYR_YA) shift = k - CYR_A;
+		else if (k >= CYR_a && k <= CYR_ya) shift = k - CYR_a;
 
-        // Применяем обратный сдвиг
-        result += shiftChar(c, shift);
-        key_index++;
-    }
-
-    return result;
+		result += shiftChar(ciphertext[i], -shift);
+	}
+	return result;
 }
 
 bool VigenereCipher::encryptFile(const std::string& inputFile, const std::string& outputFile) const
@@ -314,39 +286,15 @@ void VigenereCipher::setKey(const std::string& key)
 
 char VigenereCipher::shiftChar(char c, int shift) const
 {
-    // Используем ту же логику, что и в CaesarCipher
-    char result = c;
+	unsigned char uc = static_cast<unsigned char>(c);
 
-	if (c >= 'A' && c <= 'Z')
-	{
-		c = c + (shift % ENG);
-		if (c > 'Z') c = 'A' + (c - 'Z' - 1);
-		else if (c < 'A') c = 'Z' - ('A' - c - 1);
-		return c;
-	}
-	if (c >= 'a' && c <= 'z')
-	{
-		c = c + (shift % ENG);
-		if (c > 'z') c = 'a' + (c - 'z' - 1);
-		else if (c < 'a') c = 'z' - ('a' - c - 1);
-		return c;
-	}
-	if (c >= 'А' && c <= 'Я')
-	{
-		c = c + (shift % RUS);
-		if (c > 'Я') c = 'А' + (c - 'Я' - 1);
-		else if (c < 'А') c = 'Я' - ('А' - c - 1);
-		return c;
-	}
-	if (c >= 'а' && c <= 'я')
-	{
-		c = c + (shift % RUS);
-		if (c > 'я') c = 'а' + (c - 'я' - 1);
-		else if (c < 'а') c = 'я' - ('а' - c - 1);
-		return c;
-	}
+	if (uc >= 'A' && uc <= 'Z') return 'A' + (uc - 'A' + shift + ENG) % ENG;
+	if (uc >= 'a' && uc <= 'z') return 'a' + (uc - 'a' + shift + ENG) % ENG;
 
-    return result;
+	if (uc >= CYR_A && uc <= CYR_YA) return CYR_A + (uc - CYR_A + shift + RUS) % RUS;
+	if (uc >= CYR_a && uc <= CYR_ya) return CYR_a + (uc - CYR_a + shift + RUS) % RUS;
+
+	return c;
 }
 
 std::string VigenereCipher::extendKey(const std::string& key, size_t length) const
