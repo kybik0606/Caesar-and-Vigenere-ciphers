@@ -209,7 +209,7 @@ void vigenereMenu()
                 outputFile += ".txt";
             }
 
-            cipher.encryptFile(inputFile, outputFile); // Теперь этот метод реализован
+            cipher.encryptFile(inputFile, outputFile);
             break;
         }
         case 6:
@@ -224,7 +224,7 @@ void vigenereMenu()
                 outputFile += ".txt";
             }
 
-            cipher.decryptFile(inputFile, outputFile); // Теперь этот метод реализован
+            cipher.decryptFile(inputFile, outputFile);
             break;
         }
         case 7:

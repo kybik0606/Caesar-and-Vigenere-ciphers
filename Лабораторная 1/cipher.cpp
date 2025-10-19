@@ -51,38 +51,15 @@ void CaesarCipher::setKey(int key)
 
 char::CaesarCipher::shiftChar(char c, int shift) const
 {
-	char result = c;
+	unsigned char uc = static_cast<unsigned char>(c);
 
-	if (c >= 'A' && c <= 'Z')
-	{
-		c = c + (shift % ENG);
-		if (c > 'Z') c = 'A' + (c - 'Z' - 1);
-		else if (c < 'A') c = 'Z' - ('A' - c - 1);
-		return c;
-	}
-	if (c >= 'a' && c <= 'z')
-	{
-		c = c + (shift % ENG);
-		if (c > 'z') c = 'a' + (c - 'z' - 1);
-		else if (c < 'a') c = 'z' - ('a' - c - 1);
-		return c;
-	}
-	if (c >= 'À' && c <= 'ß')
-	{
-		c = c + (shift % RUS);
-		if (c > 'ß') c = 'À' + (c - 'ß' - 1);
-		else if (c < 'À') c = 'ß' - ('À' - c - 1);
-		return c;
-	}
-	if (c >= 'à' && c <= 'ÿ')
-	{
-		c = c + (shift % RUS);
-		if (c > 'ÿ') c = 'à' + (c - 'ÿ' - 1);
-		else if (c < 'à') c = 'ÿ' - ('à' - c - 1);
-		return c;
-	}
+	if (uc >= 'A' && uc <= 'Z') return 'A' + (uc - 'A' + shift + ENG) % ENG;
+	if (uc >= 'a' && uc <= 'z') return 'a' + (uc - 'a' + shift + ENG) % ENG;
 
-	return result;
+	if (uc >= CYR_A && uc <= CYR_YA) return CYR_A + (uc - CYR_A + shift + RUS) % RUS;
+	if (uc >= CYR_a && uc <= CYR_ya) return CYR_a + (uc - CYR_a + shift + RUS) % RUS;
+
+	return c;
 }
 
 bool CaesarCipher::encryptFile(const std::string& inputFile, const std::string& outputFile) const
