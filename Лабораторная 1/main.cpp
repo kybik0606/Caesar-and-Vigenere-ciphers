@@ -3,6 +3,7 @@
 #include <string>
 #include <Windows.h>
 #include "cipher.hpp"
+#include "const.hpp"
 
 using namespace std;
 
@@ -51,11 +52,23 @@ void caesarMenu()
                 try
                 {
                     int key = stoi(input);
+                    if (key < 0)
+                    {
+                        cout << "Ошибка! Введите положительный сдвиг" << endl;
+                        break;
+                    }
+                    else if (key >= RUS)
+                    {
+                        cout << "Ошибка! Размер сдвиг должен быть меньше размера алфавита (32)" << endl;
+                        break;
+                    }
+
                     cipher.setKey(key);
+                    cout << "Ключ установлен!" << endl;
                 }
                 catch (...)
                 {
-                    cout << "Ошибка! Введите число." << endl;
+                    cout << "Ошибка! Введите число не больше чем 2 147 483 647" << endl;
                 }
                 break;
             }

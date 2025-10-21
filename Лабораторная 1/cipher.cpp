@@ -1,18 +1,9 @@
 #include "cipher.hpp"
+#include "const.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
-
-// Константы для размеров алфавитов
-constexpr int ENG = 26;
-constexpr int RUS = 32;
-
-// CP1251 коды для кириллицы
-constexpr unsigned char CYR_A = 0xC0;   // А
-constexpr unsigned char CYR_YA = 0xDF;  // Я
-constexpr unsigned char CYR_a = 0xE0;   // а
-constexpr unsigned char CYR_ya = 0xFF;  // я
 
 // Реализация методов CaesarCipher
 
@@ -48,17 +39,35 @@ void CaesarCipher::setKey(int key)
 	key_ = key;
 }
 
-char::CaesarCipher::shiftChar(char c, int shift) const
-{
-	unsigned char uc = static_cast<unsigned char>(c);
-   
-	if (uc >= 'A' && uc <= 'Z') return 'A' + (uc - 'A' + shift + ENG) % ENG;
-	if (uc >= 'a' && uc <= 'z') return 'a' + (uc - 'a' + shift + ENG) % ENG;
+char CaesarCipher::shiftChar(char c, int shift) const {
+	char result = c;
 
-	if (uc >= CYR_A && uc <= CYR_YA) return CYR_A + (uc - CYR_A + shift + RUS) % RUS;
-	if (uc >= CYR_a && uc <= CYR_ya) return CYR_a + (uc - CYR_a + shift + RUS) % RUS;
+	if (c >= 'A' && c <= 'Z') {
+		c += (shift % ENG);
+		if (c > 'Z') c = 'A' + (c - 'Z' - 1);
+		else if (c < 'A') c = 'Z' - ('A' - c - 1);
+		return c;
+	}
+	if (c >= 'a' && c <= 'z') {
+		c += (shift % ENG);
+		if (c > 'z') c = 'a' + (c - 'z' - 1);
+		else if (c < 'a') c = 'z' - ('a' - c - 1);
+		return c;
+	}
+	if (c >= 'А' && c <= 'Я') {
+		c += (shift % RUS);
+		if (c > 'Я') c = 'А' + (c - 'Я' - 1);
+		else if (c < 'А') c = 'Я' - ('А' - c - 1);
+		return c;
+	}
+	if (c >= 'а' && c <= 'я') {
+		c += (shift % RUS);
+		if (c > 'я') c = 'а' + (c - 'я' - 1);
+		else if (c < 'а') c = 'я' - ('а' - c - 1);
+		return c;
+	}
 
-	return c;
+	return result;
 }
 
 bool CaesarCipher::encryptFile(const std::string& inputFile, const std::string& outputFile) const
